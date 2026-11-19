@@ -1,0 +1,12 @@
+{
+  "name": "Alle lachen über OLAF",
+  "short_name": "OLAF",
+  "description": "Jump'n'Run-Prototyp: Termi gegen O.L.A.F., den übereifrigen Energiespar-Roboter.",
+  "start_url": "./index.html",
+  "display": "fullscreen",
+  "orientation": "landscape",
+  "background_color": "#0d1934",
+  "theme_color": "#0d1934",
+  "lang": "de",
+  "icons": [{ "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }]
+}

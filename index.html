@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>Alle lachen über OLAF</title>
+<meta name="description" content="Jump'n'Run-Prototyp: Termi gegen O.L.A.F., den übereifrigen Energiespar-Roboter.">
+<meta name="theme-color" content="#0d1934">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="OLAF">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<!-- @@FONTS -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@500;700&display=swap">
+<!-- @@FONTS_END -->
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<canvas id="game" aria-label="Spielfeld"></canvas>
+
+<div id="touch" class="touch-layer" aria-hidden="true">
+  <div class="pad pad-left">
+    <div class="tbtn" data-btn="left"><svg viewBox="0 0 24 24"><path d="M15 5 7 12l8 7z"/></svg></div>
+    <div class="tbtn" data-btn="right"><svg viewBox="0 0 24 24"><path d="m9 5 8 7-8 7z"/></svg></div>
+  </div>
+  <div class="pad pad-right">
+    <div class="tbtn tbtn-b" data-btn="action"><b>B</b><small>Signal</small></div>
+    <div class="tbtn tbtn-a" data-btn="jump"><b>A</b><small>Sprung</small></div>
+  </div>
+</div>
+
+<div id="topbar">
+  <button id="btnPause" class="icon-btn" type="button" aria-label="Pause">
+    <svg viewBox="0 0 24 24"><rect x="6" y="5" width="4" height="14" rx="1.5"/><rect x="14" y="5" width="4" height="14" rx="1.5"/></svg>
+  </button>
+  <button id="btnSound" class="icon-btn" type="button" aria-label="Ton ausschalten">
+    <svg viewBox="0 0 24 24"><path d="M4 9h4l5-4v14l-5-4H4z"/><path class="wave" d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" fill="none" stroke-width="2" stroke-linecap="round"/><path class="cross" d="m16 9 6 6m0-6-6 6" fill="none" stroke-width="2" stroke-linecap="round"/></svg>
+  </button>
+  <button id="btnFull" class="icon-btn" type="button" aria-label="Vollbild">
+    <svg viewBox="0 0 24 24"><path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </button>
+</div>
+
+<section id="title" class="overlay" aria-labelledby="titleHead">
+  <div class="card card-title">
+    <div class="title-main">
+      <p class="eyebrow">Jump'n'Run im Smartphone · Prototyp</p>
+      <h1 id="titleHead">Alle lachen über <span>OLAF</span></h1>
+      <p class="lead">Termi ist ein kleines Programm in deinem Handy. O.L.A.F., der übereifrige Energiespar-Roboter, friert alles ein, was stillsteht. Manchmal sogar sich selbst.</p>
+      <div class="actions">
+        <button id="btnPlay" class="btn primary" type="button">Spielen</button>
+      </div>
+      <p id="bestLine" class="best"></p>
+    </div>
+    <div class="title-side">
+      <canvas id="titleArt" aria-hidden="true"></canvas>
+      <ol class="worlds" aria-label="Welten">
+        <li class="open"><span>1</span>Prozess-Stadt</li>
+        <li><span>2</span>Binder-Tunnel</li>
+        <li><span>3</span>Socket-Brücken</li>
+        <li><span>4</span>Broadcast-Turm</li>
+        <li><span>5</span>Kühlraum</li>
+      </ol>
+      <dl class="rules">
+        <div><dt>Stillstand</dt><dd>macht Frost</dd></div>
+        <div><dt>Wake-Lock</dt><dd>schützt 8 s</dd></div>
+        <div><dt>Apps</dt><dd>3× anpingen</dd></div>
+      </dl>
+      <p class="keys"><span class="only-touch">◀ ▶ laufen · A springen · B Weck-Signal</span><span class="only-desk">← → laufen · Leertaste springen · X Weck-Signal · P Pause</span></p>
+    </div>
+  </div>
+</section>
+
+<section id="pause" class="overlay" hidden aria-labelledby="pauseHead">
+  <div class="card card-small">
+    <h2 id="pauseHead">Pause</h2>
+    <p class="muted">Keine Sorge: Während der Pause friert nichts ein.</p>
+    <div class="actions col">
+      <button id="btnResume" class="btn primary" type="button">Weiter</button>
+      <button id="btnRestartP" class="btn" type="button">Level neu starten</button>
+      <button id="btnTitleP" class="btn ghost" type="button">Zum Titel</button>
+    </div>
+  </div>
+</section>
+
+<section id="gameover" class="overlay" hidden aria-labelledby="goHead">
+  <div class="card card-term">
+    <p class="term-bar"><i></i><i></i><i></i><span>termi — prozess-stadt</span></p>
+    <pre id="goLog" class="term-log"></pre>
+    <h2 id="goHead" class="exit">Prozess beendet: <b>exit=124</b></h2>
+    <p id="goQuote" class="quote"></p>
+    <div class="actions">
+      <button id="btnRetry" class="btn primary" type="button">Neu starten</button>
+      <button id="btnTitleG" class="btn ghost" type="button">Zum Titel</button>
+    </div>
+  </div>
+</section>
+
+<section id="complete" class="overlay" hidden aria-labelledby="cHead">
+  <div class="card card-small">
+    <p class="eyebrow">Welt 1 geschafft</p>
+    <h2 id="cHead">Prozess-Stadt ist wieder wach</h2>
+    <dl class="stats">
+      <div><dt>Zeit</dt><dd id="cTime">0:00</dd></div>
+      <div><dt>Bits</dt><dd id="cBits">0</dd></div>
+      <div><dt>Apps befreit</dt><dd id="cApps">0</dd></div>
+      <div><dt>Sparbots</dt><dd id="cBots">0</dd></div>
+      <div><dt>Instanzen verloren</dt><dd id="cLost">0</dd></div>
+    </dl>
+    <p class="muted">Nächste Welt: Binder-Tunnel. Kommt in einer späteren Version.</p>
+    <div class="actions">
+      <button id="btnAgain" class="btn primary" type="button">Nochmal spielen</button>
+      <button id="btnTitleC" class="btn ghost" type="button">Zum Titel</button>
+    </div>
+  </div>
+</section>
+
+<div id="rotate" class="toast" hidden>Tipp: Handy quer halten für mehr Sicht</div>
+<div id="safeProbe" aria-hidden="true"></div>
+
+<!-- @@SCRIPTS -->
+<script src="js/core.js"></script>
+<script src="js/level1.js"></script>
+<script src="js/world.js"></script>
+<script src="js/entities.js"></script>
+<script src="js/olaf.js"></script>
+<script src="js/art-world.js"></script>
+<script src="js/art-chars.js"></script>
+<script src="js/audio.js"></script>
+<script src="js/input.js"></script>
+<script src="js/game.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/main.js"></script>
+<!-- @@SCRIPTS_END -->
+</body>
+</html>
